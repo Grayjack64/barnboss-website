@@ -4,27 +4,27 @@ import { Heart, Users, Target, Award } from 'lucide-react';
 const About = () => {
   const teamMembers = [
     {
-      name: 'Dr. Emily Rodriguez',
+      name: 'Missy Jean "MJ" Etheridge',
       role: 'Co-Founder & CEO',
-      bio: 'Equine veterinarian with 15+ years experience. Former stable owner who understands the daily challenges of horse management.',
+      bio: 'Horse owner and manager who experienced firsthand the challenges of coordinating care, workers, and operations that inspired BarnBoss.',
       image: 'https://images.pexels.com/photos/5876695/pexels-photo-5876695.jpeg?auto=compress&cs=tinysrgb&w=400'
     },
     {
-      name: 'Marcus Thompson',
+      name: 'Danny Upchurch',
       role: 'Co-Founder & CTO',
-      bio: 'Former ranch manager turned tech entrepreneur. Combines deep industry knowledge with software development expertise.',
+      bio: 'Technology expert and horse enthusiast who helped transform MJ\'s vision into a comprehensive digital solution.',
       image: 'https://images.pexels.com/photos/5876695/pexels-photo-5876695.jpeg?auto=compress&cs=tinysrgb&w=400'
     },
     {
-      name: 'Sarah Kim',
-      role: 'Head of Product',
-      bio: 'UX designer and horse enthusiast. Ensures BarnBoss remains intuitive and user-friendly for all skill levels.',
+      name: 'Woody Bannister',
+      role: 'Co-Founder & COO',
+      bio: 'Operations specialist with deep understanding of equine industry workflows and business processes.',
       image: 'https://images.pexels.com/photos/5876695/pexels-photo-5876695.jpeg?auto=compress&cs=tinysrgb&w=400'
     },
     {
-      name: 'Dr. James Mitchell',
-      role: 'Equine Advisor',
-      bio: 'Board-certified equine specialist and former racing stable veterinarian. Guides our health tracking features.',
+      name: 'Danny Bannister',
+      role: 'Co-Founder & Head of Product',
+      bio: 'Product development expert focused on creating intuitive solutions that address real-world horse management challenges.',
       image: 'https://images.pexels.com/photos/5876695/pexels-photo-5876695.jpeg?auto=compress&cs=tinysrgb&w=400'
     }
   ];
@@ -112,19 +112,25 @@ const About = () => {
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                  BarnBoss began when our co-founders, Dr. Emily Rodriguez and Marcus Thompson, 
-                  met at a horse management conference in 2023. Emily, a veterinarian and former 
-                  stable owner, was frustrated with inefficient record-keeping systems.
+                  BarnBoss was born from real frustration. Missy Jean 'MJ' Etheridge, our co-founder, 
+                  found herself drowning in the chaos of managing her horses and coordinating workers. 
+                  Sticky notes, spreadsheets, and endless phone calls weren't cutting it anymore.
                 </p>
                 <p className="text-gray-600 mb-6">
-                  Marcus, who had managed a 200-horse ranch, understood the daily operational 
-                  challenges. Together, they envisioned a comprehensive solution that would 
-                  address every aspect of modern horse management.
+                  "I was losing track of feeding schedules, missing billing opportunities, and constantly 
+                  worrying about my horses' care when I wasn't there," MJ recalls. Existing farm management 
+                  tools were either too complex, too expensive, or designed for crops—not horses. The equine 
+                  industry desperately needed something better.
+                </p>
+                <p className="text-gray-600 mb-6">
+                  Over coffee one morning, MJ shared her struggles with fellow horse enthusiasts Danny Upchurch, 
+                  Woody Bannister, and Danny Bannister. They realized this wasn't just MJ's problem—it was 
+                  an industry-wide challenge that technology could solve.
                 </p>
                 <p className="text-gray-600">
-                  After 18 months of development and beta testing with over 1,000 users, 
-                  BarnBoss has proven its value with measurable results: 90% reduction in 
-                  bookkeeping time and 25% average revenue increase for our users.
+                  Together, they set out to build the horse management platform they wished existed. After 
+                  18 months of development and beta testing with over 1,000 users, BarnBoss has proven its 
+                  value: 90% reduction in bookkeeping time and 25% average revenue increase for our users.
                 </p>
               </div>
             </div>
