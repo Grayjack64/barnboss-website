@@ -313,10 +313,10 @@ const Support = () => {
               <h3 className="font-semibold text-gray-900 mb-2">Email Support</h3>
               <p className="text-gray-600 text-sm mb-4">Get help via email, usually within 24 hours</p>
               <a
-                href="mailto:support@barnboss.com"
+                href="mailto:support@mybarnboss.com"
                 className="text-blue-600 hover:text-blue-700 font-medium"
               >
-                support@barnboss.com
+                                  support@mybarnboss.com
               </a>
             </div>
 

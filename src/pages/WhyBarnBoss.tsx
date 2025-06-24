@@ -104,7 +104,7 @@ const WhyBarnBoss = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-2xl"></div>
             <div className="absolute bottom-8 left-8 text-white">
               <h3 className="text-2xl font-bold mb-2">Professional Horse Management</h3>
-              <p className="text-lg opacity-90">Trusted by 1000+ beta testers worldwide</p>
+              <p className="text-lg opacity-90">Trusted by Top Horse Professionals</p>
             </div>
           </div>
         </div>

@@ -205,7 +205,7 @@ const Privacy = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="mailto:privacy@barnboss.com"
+                href="mailto:privacy@mybarnboss.com"
                 className="px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all duration-200 font-medium"
               >
                 Contact Privacy Team

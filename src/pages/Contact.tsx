@@ -176,8 +176,8 @@ const Contact = () => {
                     <h3 className="font-semibold text-gray-900 mb-1">Headquarters</h3>
                     <p className="text-gray-600">
                       BarnBoss Technologies<br />
-                      123 Horse Park Drive<br />
-                      Lexington, KY 40511<br />
+                      2500 N Lincoln Blvd<br />
+                      Norman, OK 73069<br />
                       United States
                     </p>
                   </div>
@@ -190,8 +190,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Business Hours</h3>
                     <div className="text-gray-600 space-y-1">
-                      <p>Monday - Friday: 8:00 AM - 6:00 PM EST</p>
-                      <p>Saturday: 9:00 AM - 3:00 PM EST</p>
+                      <p>Monday - Friday: 8:00 AM - 6:00 PM CST</p>
+                      <p>Saturday: 9:00 AM - 3:00 PM CST</p>
                       <p>Sunday: Closed</p>
                       <p className="text-sm text-amber-600 font-medium mt-2">
                         Emergency support available 24/7 for Pro tier
@@ -300,7 +300,7 @@ const Contact = () => {
               <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-600 mb-2">Interactive Map</h3>
               <p className="text-gray-500">
-                Find us in the heart of Kentucky's horse country
+                Find us in beautiful Norman, Oklahoma
               </p>
             </div>
           </div>
