@@ -13,6 +13,8 @@ import Contact from './pages/Contact';
 import Download from './pages/Download';
 import Testimonials from './pages/Testimonials';
 import Privacy from './pages/Privacy';
+import ColiSigns from './pages/blog/ColiSigns';
+import TaskManagement from './pages/blog/TaskManagement';
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/support" element={<Support />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/colic-signs" element={<ColiSigns />} />
+            <Route path="/blog/task-management" element={<TaskManagement />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/download" element={<Download />} />
             <Route path="/testimonials" element={<Testimonials />} />

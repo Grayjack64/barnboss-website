@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, User, Clock, ArrowRight, Search, Tag } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -85,6 +86,18 @@ const Blog = () => {
 
   const featuredPost = blogPosts.find(post => post.featured);
   const regularPosts = filteredPosts.filter(post => !post.featured);
+
+  const getArticleLink = (id: number) => {
+    const linkMap: { [key: number]: string } = {
+      1: '/blog/colic-signs',
+      2: '/blog/task-management',
+      3: '/blog/barnboss-update',
+      4: '/blog/laminitis-guide',
+      5: '/blog/owner-communication',
+      6: '/blog/winter-care'
+    };
+    return linkMap[id] || '#';
+  };
 
   return (
     <div className="bg-white min-h-screen">
@@ -172,10 +185,10 @@ const Blog = () => {
                         <span className="text-sm text-gray-600">{featuredPost.readTime}</span>
                       </div>
                     </div>
-                    <button className="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-6 py-3 rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all duration-200 font-medium flex items-center group w-fit">
+                    <Link to="/blog/colic-signs" className="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-6 py-3 rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all duration-200 font-medium flex items-center group w-fit">
                       Read Full Article
                       <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    </Link>
                   </div>
                   <div className="relative">
                     <img
@@ -237,10 +250,10 @@ const Blog = () => {
                       </div>
                     </div>
                     
-                    <button className="text-amber-600 hover:text-amber-700 font-medium flex items-center group/btn">
+                    <Link to={getArticleLink(post.id)} className="text-amber-600 hover:text-amber-700 font-medium flex items-center group/btn">
                       Read More
                       <ArrowRight className="ml-1 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </button>
+                    </Link>
                   </div>
                 </article>
               ))}
