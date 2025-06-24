@@ -15,7 +15,7 @@ const Features = () => {
         'Veterinary visit history',
         'Vaccination schedules'
       ],
-      image: '/images/healthcare.png'
+      image: '/images/healthcare_sm.png'
     },
     {
       category: 'Task Management',
@@ -29,7 +29,7 @@ const Features = () => {
         'Photo documentation for tasks',
         'Mobile notifications for urgent items'
       ],
-      image: '/images/tasks.png'
+      image: '/images/tasks_sm.png'
     },
     {
       category: 'Financial Tracking',
@@ -57,7 +57,7 @@ const Features = () => {
         'Recurring billing automation',
         'Payment tracking and reminders'
       ],
-      image: '/images/billing.png'
+      image: '/images/billing_sm.png'
     },
     {
       category: 'Owner-Operation Sync',

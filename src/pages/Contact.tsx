@@ -149,8 +149,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email Support</h3>
                     <p className="text-gray-600 mb-2">Get help via email, usually within 24 hours</p>
-                    <a href="mailto:support@barnboss.com" className="text-amber-600 hover:text-amber-700 font-medium">
-                      support@barnboss.com
+                    <a href="mailto:support@mybarnboss.com" className="text-amber-600 hover:text-amber-700 font-medium">
+                      support@mybarnboss.com
                     </a>
                   </div>
                 </div>

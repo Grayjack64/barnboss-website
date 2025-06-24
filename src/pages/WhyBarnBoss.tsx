@@ -189,7 +189,7 @@ const WhyBarnBoss = () => {
             <div className="relative">
               <div className="w-full h-96 overflow-hidden rounded-2xl shadow-xl bg-gray-100">
                 <img
-                  src="/images/tasks.png"
+                  src="/images/tasks_sm.png"
                   alt="Successful stable management"
                   className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
                   loading="lazy"

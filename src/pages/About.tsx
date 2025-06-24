@@ -77,7 +77,7 @@ const About = () => {
             <div className="relative">
               <div className="w-full h-96 overflow-hidden rounded-2xl shadow-xl bg-gray-100">
                 <img
-                  src="/images/working.png"
+                  src="/images/working_sm.png"
                   alt="Horse care and management"
                   className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
                   loading="lazy"
@@ -116,21 +116,14 @@ const About = () => {
                   found herself drowning in the chaos of managing her horses and coordinating workers. 
                   Sticky notes, spreadsheets, and endless phone calls weren't cutting it anymore.
                 </p>
+                
                 <p className="text-gray-600 mb-6">
-                  "I was losing track of feeding schedules, missing billing opportunities, and constantly 
-                  worrying about my horses' care when I wasn't there," MJ recalls. Existing farm management 
-                  tools were either too complex, too expensive, or designed for crops—not horses. The equine 
-                  industry desperately needed something better.
-                </p>
-                <p className="text-gray-600 mb-6">
-                  Over coffee one morning, MJ shared her struggles with fellow horse enthusiasts Danny Upchurch, 
+                  One morning, MJ shared her struggles with fellow horse enthusiasts Danny Upchurch, 
                   Woody Bannister, and Danny Bannister. They realized this wasn't just MJ's problem—it was 
                   an industry-wide challenge that technology could solve.
                 </p>
                 <p className="text-gray-600">
-                  Together, they set out to build the horse management platform they wished existed. After 
-                  18 months of development and beta testing with over 1,000 users, BarnBoss has proven its 
-                  value: 90% reduction in bookkeeping time and 25% average revenue increase for our users.
+                  Together, they set out to build the horse management platform they wished existed. 
                 </p>
               </div>
             </div>
