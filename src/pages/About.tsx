@@ -10,7 +10,7 @@ const About = () => {
       image: 'https://images.pexels.com/photos/5876695/pexels-photo-5876695.jpeg?auto=compress&cs=tinysrgb&w=400'
     },
     {
-      name: 'Danny Upchurch',
+      name: 'Danny Bannister',
       role: 'Co-Founder & CTO',
       bio: 'Technology expert and horse enthusiast who helped transform MJ\'s vision into a comprehensive digital solution.',
       image: 'https://images.pexels.com/photos/5876695/pexels-photo-5876695.jpeg?auto=compress&cs=tinysrgb&w=400'
@@ -22,7 +22,7 @@ const About = () => {
       image: 'https://images.pexels.com/photos/5876695/pexels-photo-5876695.jpeg?auto=compress&cs=tinysrgb&w=400'
     },
     {
-      name: 'Danny Bannister',
+      name: 'Danny Upchurch',
       role: 'Co-Founder & Head of Product',
       bio: 'Product development expert focused on creating intuitive solutions that address real-world horse management challenges.',
       image: 'https://images.pexels.com/photos/5876695/pexels-photo-5876695.jpeg?auto=compress&cs=tinysrgb&w=400'
