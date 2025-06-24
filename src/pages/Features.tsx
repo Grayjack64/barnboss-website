@@ -15,7 +15,7 @@ const Features = () => {
         'Veterinary visit history',
         'Vaccination schedules'
       ],
-      image: 'https://images.pexels.com/photos/3662870/pexels-photo-3662870.jpeg?auto=compress&cs=tinysrgb&w=600'
+      image: '/images/healthcare.png'
     },
     {
       category: 'Task Management',
@@ -29,7 +29,7 @@ const Features = () => {
         'Photo documentation for tasks',
         'Mobile notifications for urgent items'
       ],
-      image: 'https://images.pexels.com/photos/3663912/pexels-photo-3663912.jpeg?auto=compress&cs=tinysrgb&w=600'
+      image: '/images/tasks.png'
     },
     {
       category: 'Financial Tracking',
@@ -57,7 +57,7 @@ const Features = () => {
         'Recurring billing automation',
         'Payment tracking and reminders'
       ],
-      image: 'https://images.pexels.com/photos/3760263/pexels-photo-3760263.jpeg?auto=compress&cs=tinysrgb&w=600'
+      image: '/images/billing.png'
     },
     {
       category: 'Owner-Operation Sync',
@@ -149,11 +149,14 @@ const Features = () => {
                 </div>
                 
                 <div className={`relative ${index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}`}>
-                  <img
-                    src={feature.image}
-                    alt={feature.category}
-                    className="w-full h-80 object-cover rounded-2xl shadow-xl"
-                  />
+                  <div className="w-full h-80 overflow-hidden rounded-2xl shadow-xl bg-gray-100">
+                    <img
+                      src={feature.image}
+                      alt={feature.category}
+                      className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
                 </div>
               </div>
