@@ -75,11 +75,14 @@ const About = () => {
             </div>
             
             <div className="relative">
-              <img
-                src="https://images.pexels.com/photos/3662870/pexels-photo-3662870.jpeg?auto=compress&cs=tinysrgb&w=800"
-                alt="Horse care and management"
-                className="w-full h-96 object-cover rounded-2xl shadow-xl"
-              />
+              <div className="w-full h-96 overflow-hidden rounded-2xl shadow-xl bg-gray-100">
+                <img
+                  src="/images/working.png"
+                  alt="Horse care and management"
+                  className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
             </div>
           </div>
