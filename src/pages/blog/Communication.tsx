@@ -49,7 +49,7 @@ const Communication = () => {
         {/* Hero Image */}
         <div className="mb-12">
           <img
-            src="/images/working_sm.png"
+            src="/images/communication.png"
             alt="Stable manager communicating with horse owners"
             className="w-full h-96 object-cover rounded-2xl shadow-lg"
           />
