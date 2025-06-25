@@ -15,6 +15,10 @@ import Testimonials from './pages/Testimonials';
 import Privacy from './pages/Privacy';
 import ColiSigns from './pages/blog/ColiSigns';
 import TaskManagement from './pages/blog/TaskManagement';
+import BarnBossUpdate from './pages/blog/BarnBossUpdate';
+import LaminitisGuide from './pages/blog/LaminitisGuide';
+import Communication from './pages/blog/Communication';
+import WinterCare from './pages/blog/WinterCare';
 
 function App() {
   return (
@@ -32,6 +36,10 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/colic-signs" element={<ColiSigns />} />
             <Route path="/blog/task-management" element={<TaskManagement />} />
+            <Route path="/blog/barnboss-update" element={<BarnBossUpdate />} />
+            <Route path="/blog/laminitis-guide" element={<LaminitisGuide />} />
+            <Route path="/blog/communication" element={<Communication />} />
+            <Route path="/blog/winter-care" element={<WinterCare />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/download" element={<Download />} />
             <Route path="/testimonials" element={<Testimonials />} />

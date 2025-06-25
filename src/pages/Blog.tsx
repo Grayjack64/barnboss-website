@@ -93,7 +93,7 @@ const Blog = () => {
       2: '/blog/task-management',
       3: '/blog/barnboss-update',
       4: '/blog/laminitis-guide',
-      5: '/blog/owner-communication',
+      5: '/blog/communication',
       6: '/blog/winter-care'
     };
     return linkMap[id] || '#';
