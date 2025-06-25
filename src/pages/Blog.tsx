@@ -33,11 +33,11 @@ const Blog = () => {
     },
     {
       id: 3,
-      title: 'BarnBoss 2.1 Update: New AI Health Insights and Improved Billing',
-      excerpt: 'Our latest update brings enhanced AI-powered health recommendations and streamlined billing features based on user feedback.',
+      title: 'BarnBoss Beta Launch: Revolutionary Stable Management is Here',
+      excerpt: 'We\'re excited to announce the official Beta launch of BarnBoss - the comprehensive stable management platform that\'s transforming equine care.',
       author: 'BarnBoss Staff',
-      date: '2025-01-10',
-      readTime: '4 min read',
+      date: '2025-01-15',
+      readTime: '6 min read',
       category: 'BarnBoss Updates',
       image: 'https://images.pexels.com/photos/3760263/pexels-photo-3760263.jpeg?auto=compress&cs=tinysrgb&w=600',
       featured: false
