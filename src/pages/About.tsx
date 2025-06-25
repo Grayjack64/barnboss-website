@@ -6,7 +6,7 @@ const About = () => {
     {
       name: 'Missy Jean "MJ" Etheridge',
       role: 'Co-Founder & CEO',
-      bio: 'Horse owner and manager who experienced firsthand the challenges of coordinating care, workers, and operations that inspired BarnBoss.',
+      bio: 'NCHA Non-Pro Hall of Fame inductee and accomplished cutting horse rider from Corinth, Mississippi. MJ owns Belle Terre Ranch with her husband Vick and has earned over $422,000 in lifetime NCHA earnings. Her real-world experience managing horses, workers, and complex stable operations inspired the creation of BarnBoss.',
       image: 'https://images.pexels.com/photos/5876695/pexels-photo-5876695.jpeg?auto=compress&cs=tinysrgb&w=400'
     },
     {
