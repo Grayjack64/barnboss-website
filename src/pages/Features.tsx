@@ -85,7 +85,7 @@ const Features = () => {
         'Nutrition recommendations',
         'Emergency care protocols'
       ],
-      image: 'https://images.pexels.com/photos/3663912/pexels-photo-3663912.jpeg?auto=compress&cs=tinysrgb&w=600'
+      image: '/images/wiki_sm.png'
     }
   ];
 
