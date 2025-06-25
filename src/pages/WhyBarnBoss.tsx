@@ -261,7 +261,7 @@ const WhyBarnBoss = () => {
             See Why BarnBoss is Trusted by Horse Professionals
           </h2>
           <p className="text-xl text-amber-100 mb-8">
-            Join over 1,000 beta testers who have transformed their horse management operations.
+            Join top horse professionals who have transformed their horse management operations.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="px-8 py-4 bg-white text-amber-700 rounded-xl hover:bg-gray-50 transition-all duration-200 font-semibold shadow-lg flex items-center justify-center group">
