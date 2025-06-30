@@ -16,6 +16,7 @@ import Download from './pages/Download';
 import Testimonials from './pages/Testimonials';
 import Privacy from './pages/Privacy';
 import { Dashboard } from './pages/Dashboard';
+import { Login } from './pages/Login';
 import ColiSigns from './pages/blog/ColiSigns';
 import TaskManagement from './pages/blog/TaskManagement';
 import BarnBossUpdate from './pages/blog/BarnBossUpdate';
@@ -59,6 +60,7 @@ function App() {
                     <Route path="/download" element={<Download />} />
                     <Route path="/testimonials" element={<Testimonials />} />
                     <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/login" element={<Login />} />
                   </Routes>
                 </main>
                 <Footer />

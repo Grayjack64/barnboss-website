@@ -19,6 +19,7 @@ const Navbar = () => {
     { name: 'Support', path: '/support' },
     { name: 'Blog', path: '/blog' },
     { name: 'Contact', path: '/contact' },
+    ...(user ? [] : [{ name: 'Login', path: '/login' }]),
   ];
 
   const handleSignOut = async () => {
@@ -99,7 +100,7 @@ const Navbar = () => {
                   Download
                 </Link>
                 <Link
-                  to="/dashboard"
+                  to="/login"
                   className="px-6 py-2 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
                 >
                   Sign In
@@ -173,7 +174,7 @@ const Navbar = () => {
                     Download
                   </Link>
                   <Link
-                    to="/dashboard"
+                    to="/login"
                     onClick={() => setIsOpen(false)}
                     className="px-6 py-2 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all duration-200 font-medium text-center"
                   >
