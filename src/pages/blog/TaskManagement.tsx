@@ -49,7 +49,7 @@ const TaskManagement = () => {
         {/* Hero Image */}
         <div className="mb-12">
           <img
-            src="/images/tasks_sm.png"
+            src="/images/tasks_article.png"
             alt="Stable task management and organization"
             className="w-full h-96 object-cover rounded-2xl shadow-lg"
           />

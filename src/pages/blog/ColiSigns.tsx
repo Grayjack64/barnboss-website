@@ -49,7 +49,7 @@ const ColiSigns = () => {
         {/* Hero Image */}
         <div className="mb-12">
           <img
-            src="/images/healthcare_sm.png"
+            src="/images/colic_check.png"
             alt="Horse health monitoring"
             className="w-full h-96 object-cover rounded-2xl shadow-lg"
           />
