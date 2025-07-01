@@ -72,17 +72,19 @@ interface SubscriptionPlansProps {
   currentPlan?: SubscriptionPlan | null
   onSelectPlan?: (plan: SubscriptionPlan) => void
   userId?: string
+  organizationId?: string
 }
 
 export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
   currentPlan,
   onSelectPlan,
-  userId
+  userId,
+  organizationId
 }) => {
   const [loading, setLoading] = useState<string | null>(null)
 
   const handleSelectPlan = async (planType: SubscriptionPlan) => {
-    if (!userId) {
+    if (!userId || !organizationId) {
       alert('Please log in to subscribe')
       return
     }
@@ -101,36 +103,43 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
         throw new Error('Stripe failed to load')
       }
 
-      // Create checkout session
-      const response = await fetch('/api/create-checkout-session', {
+      // Get auth token for API call
+      const authToken = localStorage.getItem('sb-access-token') || 
+                       sessionStorage.getItem('sb-access-token')
+
+      if (!authToken) {
+        throw new Error('Authentication required')
+      }
+
+      // Create subscription checkout session via Supabase Edge Function
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-subscription-checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
         },
         body: JSON.stringify({
-          price_id: plans[planType].stripe_price_id,
           user_id: userId,
-          plan_type: planType
+          organization_id: organizationId,
+          subscription_tier: planType,
+          success_url: `${window.location.origin}/account-settings?success=true&plan=${planType}`,
+          cancel_url: `${window.location.origin}/account-settings?canceled=true`
         }),
       })
 
       const session = await response.json()
 
-      if (session.error) {
-        throw new Error(session.error)
+      if (!response.ok || session.error) {
+        throw new Error(session.error || 'Failed to create checkout session')
       }
 
       // Redirect to Stripe Checkout
-      const result = await stripe.redirectToCheckout({
-        sessionId: session.sessionId,
-      })
-
-      if (result.error) {
-        throw new Error(result.error.message)
-      }
+      window.location.href = session.checkout_url
+      
     } catch (error) {
       console.error('Error:', error)
-      alert('Something went wrong. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      alert(`Failed to start subscription: ${errorMessage}`)
     } finally {
       setLoading(null)
     }

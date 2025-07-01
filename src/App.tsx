@@ -16,6 +16,8 @@ import Download from './pages/Download';
 import Testimonials from './pages/Testimonials';
 import Privacy from './pages/Privacy';
 import { Dashboard } from './pages/Dashboard';
+import { ProDashboard } from './pages/ProDashboard';
+import { AccountSettings } from './pages/AccountSettings';
 import { Login } from './pages/Login';
 import ColiSigns from './pages/blog/ColiSigns';
 import TaskManagement from './pages/blog/TaskManagement';
@@ -30,10 +32,20 @@ function App() {
       <Router>
         <div className="min-h-screen bg-gray-50">
           <Routes>
-            {/* Protected Dashboard Route */}
+            {/* Protected Dashboard Routes */}
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/pro-dashboard" element={
+              <ProtectedRoute>
+                <ProDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/account-settings" element={
+              <ProtectedRoute>
+                <AccountSettings />
               </ProtectedRoute>
             } />
             

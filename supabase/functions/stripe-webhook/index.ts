@@ -127,19 +127,24 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     // Get the subscription details
     const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
     
+    // Determine subscription tier from price ID
+    const subscriptionTier = session.metadata?.subscription_tier || 'personal'
+    
     const subscriptionData = {
       user_id: session.metadata?.user_id,
       organization_id: session.metadata?.organization_id || null,
       stripe_subscription_id: subscription.id,
       stripe_customer_id: subscription.customer as string,
+      subscription_tier: subscriptionTier,
       status: subscription.status,
-      plan_type: session.metadata?.plan_type || 'personal',
       current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
       current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
       cancel_at_period_end: subscription.cancel_at_period_end,
       trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
       trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-      metadata: session.metadata || {}
+      metadata: session.metadata || {},
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     }
 
     // Insert or update subscription
@@ -151,13 +156,29 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       throw new Error(`Failed to update subscription: ${subError.message}`)
     }
 
-    // Update user profile with new account type and customer ID
+    // Update organization with new subscription tier and customer ID
+    if (session.metadata?.organization_id) {
+      const { error: orgError } = await supabase
+        .from('organizations')
+        .update({ 
+          subscription_tier: subscriptionTier,
+          stripe_customer_id: subscription.customer as string,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', session.metadata.organization_id)
+
+      if (orgError) {
+        console.error('Failed to update organization:', orgError)
+      }
+    }
+
+    // Update user profile with customer ID
     if (session.metadata?.user_id) {
       const { error: profileError } = await supabase
         .from('user_account_profiles')
         .update({ 
-          account_type: session.metadata.plan_type,
-          stripe_customer_id: subscription.customer as string
+          stripe_customer_id: subscription.customer as string,
+          updated_at: new Date().toISOString()
         })
         .eq('user_id', session.metadata.user_id)
 
