@@ -80,7 +80,7 @@ const Navbar = () => {
                   Dashboard
                 </Link>
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <span>Hi, {profile?.full_name || user.email}</span>
+                  <span>Hi, {profile?.display_name || user?.user_metadata?.full_name || user.email}</span>
                 </div>
                 <button
                   onClick={handleSignOut}
@@ -151,7 +151,7 @@ const Navbar = () => {
                     Dashboard
                   </Link>
                   <div className="text-center text-sm text-gray-600 py-2">
-                    {profile?.full_name || user.email}
+                    {profile?.display_name || user?.user_metadata?.full_name || user.email}
                   </div>
                   <button
                     onClick={() => {

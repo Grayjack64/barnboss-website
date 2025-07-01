@@ -22,10 +22,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
-        .from('user_profiles')
+        .from('user_account_profiles')
         .select('*')
-        .eq('id', userId)
-        .single()
+        .eq('user_id', userId)
+        .maybeSingle() // Use maybeSingle() instead of single() to handle 0 or 1 results
 
       if (error) {
         console.error('Error fetching user profile:', error)
@@ -48,17 +48,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .select('organization_id')
         .eq('user_id', userId)
         .eq('status', 'active')
-        .single()
+        .maybeSingle() // Use maybeSingle() to handle 0 or 1 results
 
-      if (memberError || !memberData) {
-        // Maybe they own an organization
+      if (memberError) {
+        console.error('Error fetching organization membership:', memberError)
+      }
+
+      if (!memberData) {
+        // Maybe they own an organization - try to get the first one
         const { data: orgData, error: orgError } = await supabase
           .from('organizations')
           .select('*')
           .eq('owner_id', userId)
-          .single()
+          .limit(1)
+          .maybeSingle() // Use maybeSingle() instead of single()
 
-        if (orgError || !orgData) {
+        if (orgError) {
+          console.error('Error fetching owned organizations:', orgError)
           return null
         }
 
@@ -70,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('organizations')
         .select('*')
         .eq('id', memberData.organization_id)
-        .single()
+        .maybeSingle() // Use maybeSingle() instead of single()
 
       if (orgError) {
         console.error('Error fetching organization:', orgError)

@@ -1,11 +1,14 @@
 // Database Types based on MJ Horse Manager schema
 export interface UserProfile {
   id: string
-  email: string
-  full_name: string | null
-  avatar_url: string | null
-  phone: string | null
+  user_id: string
   account_type: 'personal' | 'personal_plus' | 'pro'
+  display_name: string | null
+  bio: string | null
+  profile_image_url: string | null
+  preferences: Record<string, any>
+  account_settings: Record<string, any>
+  is_active: boolean
   created_at: string
   updated_at: string
 }
