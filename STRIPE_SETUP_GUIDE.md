@@ -1,165 +1,441 @@
-# BarnBoss Stripe Integration Setup Guide
+# BarnBoss Stripe Setup Guide
 
-## 🎯 Overview
+## Overview
+Complete setup guide for integrating Stripe Connect with BarnBoss's corrected pricing structure:
 
-This guide covers the complete setup of Stripe integration for BarnBoss, including subscription management and Pro user marketplace functionality.
+- **Personal**: Free
+- **Personal Plus**: $9.99/month  
+- **Premium (Ranch)**: $49.99/month
+- **Pro**: $249/month
 
----
+## Prerequisites
 
-## 📋 Prerequisites
+### 1. Stripe Account Setup
+1. Create a Stripe account at https://stripe.com
+2. Complete business verification
+3. Enable Stripe Connect in Dashboard → Settings → Connect
 
-### 1. Environment Variables Setup
+### 2. Database Migrations
+Execute the following migrations manually in your Supabase SQL editor:
 
-Create a `.env` file in your project root with the following variables:
+```sql
+-- Execute migrations/001_add_stripe_fields_to_user_profiles.sql
+-- Execute migrations/002_add_stripe_fields_to_organizations.sql  
+-- Execute migrations/003_enhance_invoices_with_stripe.sql
+-- Execute migrations/004_create_stripe_subscriptions_and_webhooks.sql
+```
+
+### 3. Environment Variables
+Add to your `.env` file:
+
+```env
+# Stripe Configuration
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key_here
+STRIPE_SECRET_KEY=sk_test_your_secret_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+STRIPE_CONNECT_CLIENT_ID=ca_your_connect_client_id_here
+
+# Supabase (existing)
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+## Stripe Dashboard Configuration
+
+### 1. Create Products and Prices
+
+Execute in Stripe CLI or Dashboard:
 
 ```bash
-# Supabase Configuration (existing)
-VITE_SUPABASE_URL=https://hjqxajipxbbnggrscpcq.supabase.co
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+# Personal Plus - $9.99/month
+stripe products create \
+  --name="Personal Plus" \
+  --description="Advanced horse management with analytics and health tracking"
 
-# Stripe Configuration
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+stripe prices create \
+  --product=prod_personal_plus_id \
+  --unit-amount=999 \
+  --currency=usd \
+  --recurring[interval]=month \
+  --lookup-key=personal_plus_monthly
 
-# Server-side Stripe key (for Supabase Edge Functions - NOT exposed to frontend)
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+# Premium (Ranch) - $49.99/month
+stripe products create \
+  --name="Premium (Ranch)" \
+  --description="Complete ranch management with unlimited horses and team collaboration"
+
+stripe prices create \
+  --product=prod_premium_id \
+  --unit-amount=4999 \
+  --currency=usd \
+  --recurring[interval]=month \
+  --lookup-key=premium_monthly
+
+# Pro - $249/month
+stripe products create \
+  --name="Pro" \
+  --description="Full marketplace capabilities with client management and invoicing"
+
+stripe prices create \
+  --product=prod_pro_id \
+  --unit-amount=24900 \
+  --currency=usd \
+  --recurring[interval]=month \
+  --lookup-key=pro_monthly
 ```
 
-**Note**: Replace the placeholder keys with your actual Stripe API keys from your dashboard.
+### 2. Configure Stripe Connect
 
----
+1. Go to Connect → Settings
+2. Set your branding (logo, colors)
+3. Configure webhooks: `https://yourdomain.com/api/webhooks/stripe`
+4. Enable required capabilities:
+   - `card_payments`
+   - `transfers`
 
-## 🗄️ Database Setup
+### 3. Webhook Configuration
 
-Execute the following migrations in order in your Supabase SQL editor:
-
-### Migration 1: User Profile Stripe Fields
-```sql
--- File: migrations/001_add_stripe_fields_to_user_profiles.sql
--- Execute in Supabase SQL Editor
-```
-
-### Migration 2: Organization Stripe Fields  
-```sql
--- File: migrations/002_add_stripe_fields_to_organizations.sql
--- Execute in Supabase SQL Editor
-```
-
-### Migration 3: Invoice Stripe Enhancement
-```sql
--- File: migrations/003_enhance_invoices_with_stripe.sql
--- Execute in Supabase SQL Editor
-```
-
-### Migration 4: Subscription & Payment Tables
-```sql
--- File: migrations/004_create_stripe_subscriptions_and_webhooks.sql
--- Execute in Supabase SQL Editor
-```
-
----
-
-## 🔧 Stripe Dashboard Setup
-
-### 1. Create Subscription Products
-
-In your Stripe Dashboard, create these products:
-
-#### Personal Plus Plan
-- **Product Name**: "BarnBoss Personal Plus"
-- **Pricing**: $19.99/month recurring
-- **Price ID**: Copy this ID and update in `src/components/subscription/SubscriptionPlans.tsx`
-
-#### Pro Plan
-- **Product Name**: "BarnBoss Pro"
-- **Pricing**: $49.99/month recurring
-- **Price ID**: Copy this ID and update in `src/components/subscription/SubscriptionPlans.tsx`
-
-### 2. Enable Stripe Connect
-
-1. Go to **Connect** in your Stripe Dashboard
-2. Enable **Express accounts** for your platform
-3. Configure your platform settings:
-   - **Platform name**: "BarnBoss"
-   - **Support email**: Your support email
-   - **Platform website**: Your website URL
-
-### 3. Configure Webhooks
-
-Set up webhooks to handle Stripe events:
-
-**Webhook URL**: `https://your-domain.com/api/webhooks/stripe`
-
-**Events to listen for**:
+Required webhook events:
+- `account.updated`
 - `checkout.session.completed`
-- `payment_intent.succeeded`
-- `payment_intent.payment_failed`
 - `invoice.payment_succeeded`
 - `invoice.payment_failed`
 - `customer.subscription.created`
 - `customer.subscription.updated`
 - `customer.subscription.deleted`
-- `account.updated` (for Connect accounts)
+- `payment_intent.succeeded`
+- `payment_intent.payment_failed`
 
----
+## Supabase Edge Functions
 
-## 🚀 Implementation Summary
+Create the following Edge Functions:
 
-### ✅ Components Created
-- **SubscriptionPlans**: Beautiful plan selection UI with Stripe Checkout integration
-- **InvoiceCreator**: Complete invoice creation for Pro users with payment link generation
-- **Stripe Client**: Frontend Stripe.js configuration and utilities
+### 1. Create Checkout Session
 
-### ✅ Database Schema
-- **4 Migration Files**: Complete database schema updates for Stripe integration
-- **Payment Tracking**: Comprehensive payment history and status tracking
-- **Webhook Logging**: Event logging for reliable payment processing
+File: `supabase/functions/create-checkout-session/index.ts`
 
-### ✅ TypeScript Integration
-- **Enhanced Types**: Complete type definitions for all Stripe entities
-- **Type Safety**: Full TypeScript support for payment processing
+```typescript
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import Stripe from 'https://esm.sh/stripe@12.0.0?target=deno'
 
----
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+  apiVersion: '2022-11-15',
+})
 
-## 📊 Features Overview
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+)
 
-### Subscription Management
-- Three-tier plans (Personal Free, Personal Plus $19.99, Pro $49.99)
-- Automatic Stripe customer creation
-- Subscription status tracking and management
-- Trial period support
+serve(async (req) => {
+  try {
+    const { price_id, user_id, plan_type } = await req.json()
 
-### Pro User Marketplace
-- Invoice creation with line items
-- Stripe payment link generation
-- Multiple payment methods (Card, ACH)
-- Payment status tracking
-- Customer notifications
+    // Get user from database
+    const { data: profile } = await supabase
+      .from('user_account_profiles')
+      .select('*')
+      .eq('user_id', user_id)
+      .single()
 
-### Payment Processing
-- Secure Stripe Checkout integration
-- Webhook event handling
-- Payment history tracking
-- Fee calculation and reporting
+    if (!profile) {
+      throw new Error('User not found')
+    }
 
----
+    let customer_id = profile.stripe_customer_id
 
-## 🔄 Next Steps
+    // Create customer if doesn't exist
+    if (!customer_id) {
+      const customer = await stripe.customers.create({
+        email: profile.email,
+        metadata: {
+          user_id: user_id,
+          plan_type: plan_type
+        }
+      })
+      customer_id = customer.id
 
-1. **Execute Database Migrations**: Run all 4 migration files in Supabase
-2. **Set Environment Variables**: Add your actual Stripe API keys to `.env`
-3. **Configure Stripe Dashboard**: Set up products, Connect, and webhooks
-4. **Deploy Edge Functions**: Create Supabase Edge Functions for server-side operations
-5. **Test Integration**: Use Stripe test mode to verify all functionality
+      // Update profile with customer ID
+      await supabase
+        .from('user_account_profiles')
+        .update({ stripe_customer_id: customer_id })
+        .eq('user_id', user_id)
+    }
 
----
+    // Create checkout session
+    const session = await stripe.checkout.sessions.create({
+      customer: customer_id,
+      line_items: [{
+        price: price_id,
+        quantity: 1,
+      }],
+      mode: 'subscription',
+      success_url: `${req.headers.get('origin')}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/pricing`,
+      subscription_data: {
+        metadata: {
+          user_id: user_id,
+          plan_type: plan_type
+        },
+        trial_period_days: 14 // 14-day free trial
+      },
+      metadata: {
+        user_id: user_id,
+        plan_type: plan_type
+      }
+    })
 
-## 📞 Support
+    return new Response(
+      JSON.stringify({ sessionId: session.id }),
+      { 
+        headers: { "Content-Type": "application/json" },
+      }
+    )
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    )
+  }
+})
+```
 
-For questions or issues:
-- Review Stripe documentation: https://stripe.com/docs
-- Check Supabase Edge Functions: https://supabase.com/docs/guides/functions
-- Contact development team for BarnBoss-specific implementation
+### 2. Create Payment Link
 
----
+File: `supabase/functions/create-payment-link/index.ts`
 
-*Implementation completed with full Stripe Connect marketplace functionality* 
+```typescript
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import Stripe from 'https://esm.sh/stripe@12.0.0?target=deno'
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+  apiVersion: '2022-11-15',
+})
+
+serve(async (req) => {
+  try {
+    const { 
+      invoice_id, 
+      amount, 
+      customer_email, 
+      customer_name, 
+      description,
+      metadata 
+    } = await req.json()
+
+    // Create payment link
+    const paymentLink = await stripe.paymentLinks.create({
+      line_items: [{
+        price_data: {
+          currency: 'usd',
+          unit_amount: amount,
+          product_data: {
+            name: description,
+          },
+        },
+        quantity: 1,
+      }],
+      metadata: metadata,
+      after_completion: {
+        type: 'redirect',
+        redirect: {
+          url: `${req.headers.get('origin')}/invoice-paid?invoice_id=${invoice_id}`
+        }
+      }
+    })
+
+    return new Response(
+      JSON.stringify({ 
+        id: paymentLink.id,
+        url: paymentLink.url 
+      }),
+      { 
+        headers: { "Content-Type": "application/json" },
+      }
+    )
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    )
+  }
+})
+```
+
+### 3. Stripe Webhook Handler
+
+File: `supabase/functions/stripe-webhook/index.ts`
+
+```typescript
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import Stripe from 'https://esm.sh/stripe@12.0.0?target=deno'
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+  apiVersion: '2022-11-15',
+})
+
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+)
+
+serve(async (req) => {
+  const signature = req.headers.get('stripe-signature')
+  const body = await req.text()
+  
+  let event: Stripe.Event
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature!,
+      Deno.env.get('STRIPE_WEBHOOK_SECRET')!
+    )
+  } catch (err) {
+    return new Response(`Webhook Error: ${err.message}`, { status: 400 })
+  }
+
+  // Log webhook event
+  await supabase.from('stripe_webhook_events').insert({
+    stripe_event_id: event.id,
+    event_type: event.type,
+    payload: event.data,
+    processed: false
+  })
+
+  // Handle the event
+  switch (event.type) {
+    case 'checkout.session.completed':
+      const session = event.data.object as Stripe.Checkout.Session
+      
+      if (session.mode === 'subscription') {
+        // Handle subscription creation
+        const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
+        
+        await supabase.from('stripe_subscriptions').insert({
+          user_id: session.metadata?.user_id,
+          stripe_subscription_id: subscription.id,
+          stripe_customer_id: subscription.customer as string,
+          status: subscription.status,
+          plan_type: session.metadata?.plan_type,
+          current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+          current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+          metadata: session.metadata || {}
+        })
+
+        // Update user profile
+        await supabase
+          .from('user_account_profiles')
+          .update({ 
+            account_type: session.metadata?.plan_type,
+            stripe_customer_id: subscription.customer as string
+          })
+          .eq('user_id', session.metadata?.user_id)
+      }
+      break
+
+    case 'customer.subscription.updated':
+      const updatedSub = event.data.object as Stripe.Subscription
+      
+      await supabase
+        .from('stripe_subscriptions')
+        .update({
+          status: updatedSub.status,
+          current_period_start: new Date(updatedSub.current_period_start * 1000).toISOString(),
+          current_period_end: new Date(updatedSub.current_period_end * 1000).toISOString(),
+          cancel_at_period_end: updatedSub.cancel_at_period_end,
+          canceled_at: updatedSub.canceled_at ? new Date(updatedSub.canceled_at * 1000).toISOString() : null
+        })
+        .eq('stripe_subscription_id', updatedSub.id)
+      break
+
+    case 'invoice.payment_succeeded':
+      const invoice = event.data.object as Stripe.Invoice
+      
+      // Record payment
+      await supabase.from('payment_history').insert({
+        user_id: invoice.metadata?.user_id,
+        stripe_payment_intent_id: invoice.payment_intent as string,
+        amount: invoice.amount_paid / 100,
+        currency: invoice.currency,
+        status: 'succeeded',
+        metadata: invoice.metadata || {}
+      })
+      break
+
+    default:
+      console.log(`Unhandled event type ${event.type}`)
+  }
+
+  // Mark webhook as processed
+  await supabase
+    .from('stripe_webhook_events')
+    .update({ processed: true, processed_at: new Date().toISOString() })
+    .eq('stripe_event_id', event.id)
+
+  return new Response(JSON.stringify({ received: true }), {
+    headers: { "Content-Type": "application/json" },
+  })
+})
+```
+
+## Deploy Edge Functions
+
+```bash
+# Deploy all functions
+supabase functions deploy create-checkout-session
+supabase functions deploy create-payment-link  
+supabase functions deploy stripe-webhook
+
+# Set secrets
+supabase secrets set STRIPE_SECRET_KEY=sk_test_your_key_here
+supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+```
+
+## Testing
+
+### 1. Test Credit Cards
+Use Stripe's test card numbers:
+- `4242424242424242` - Visa (succeeds)
+- `4000000000000002` - Visa (declined)
+
+### 2. Test Subscription Flow
+1. Go to `/pricing` page
+2. Select a paid plan
+3. Complete checkout with test card
+4. Verify subscription created in database
+
+### 3. Test Invoice Generation
+1. Login as Pro user
+2. Go to billing section
+3. Create invoice with test data
+4. Verify payment link generated
+
+## Production Checklist
+
+- [ ] Replace test API keys with live keys
+- [ ] Update webhook URL to production domain
+- [ ] Configure live payment methods
+- [ ] Set up monitoring and alerts
+- [ ] Test all flows in production
+- [ ] Configure tax collection if required
+
+## Support
+
+For Stripe-specific issues:
+- Stripe Documentation: https://stripe.com/docs
+- Stripe Connect Guide: https://stripe.com/docs/connect
+
+For BarnBoss integration:
+- Check webhook event logs in Stripe Dashboard
+- Review Supabase Edge Function logs
+- Monitor database for failed payments/subscriptions 
