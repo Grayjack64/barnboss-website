@@ -322,7 +322,7 @@ const Testimonials = () => {
                 title: 'Ranch Management Success',
                 author: 'Mike Rodriguez',
                 duration: '4:15',
-                thumbnail: 'https://images.pexels.com/photos/3094334/pexels-photo-3094334.jpeg?auto=compress&cs=tinysrgb&w=600'
+                thumbnail: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80'
               },
               {
                 title: 'Boarding Facility Growth',

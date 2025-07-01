@@ -84,4 +84,4 @@ dist-ssr
 # postcss.config.js
 # tailwind.config.js
 # src/
-# public/ 
+# public/ .env.backup

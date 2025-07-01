@@ -61,7 +61,7 @@ const Blog = () => {
       date: '2025-01-05',
       readTime: '7 min read',
       category: 'Management Tips',
-      image: 'https://images.pexels.com/photos/3094334/pexels-photo-3094334.jpeg?auto=compress&cs=tinysrgb&w=600',
+      image: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80',
       featured: false
     },
     {

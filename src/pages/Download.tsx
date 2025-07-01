@@ -118,7 +118,7 @@ const Download = () => {
                     className="w-full h-48 object-cover rounded-2xl shadow-lg"
                   />
                   <img
-                    src="https://images.pexels.com/photos/3094334/pexels-photo-3094334.jpeg?auto=compress&cs=tinysrgb&w=400"
+                    src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=400&q=80"
                     alt="BarnBoss health tracking"
                     className="w-full h-64 object-cover rounded-2xl shadow-lg"
                   />

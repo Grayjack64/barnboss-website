@@ -42,48 +42,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Fetch user's organization (if they're a member)
   const fetchUserOrganization = async (userId: string) => {
     try {
-      // First check if user is a member of any organization
-      const { data: memberData, error: memberError } = await supabase
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', userId)
-        .eq('status', 'active')
-        .maybeSingle() // Use maybeSingle() to handle 0 or 1 results
-
-      if (memberError) {
-        console.error('Error fetching organization membership:', memberError)
-      }
-
-      if (!memberData) {
-        // Maybe they own an organization - try to get the first one
-        const { data: orgData, error: orgError } = await supabase
-          .from('organizations')
-          .select('*')
-          .eq('owner_id', userId)
-          .limit(1)
-          .maybeSingle() // Use maybeSingle() instead of single()
-
-        if (orgError) {
-          console.error('Error fetching owned organizations:', orgError)
-          return null
-        }
-
-        return orgData
-      }
-
-      // Fetch the organization details
+      // Try to fetch organizations the user owns first
       const { data: orgData, error: orgError } = await supabase
         .from('organizations')
         .select('*')
-        .eq('id', memberData.organization_id)
-        .maybeSingle() // Use maybeSingle() instead of single()
+        .eq('owner_id', userId)
+        .limit(1)
+        .maybeSingle()
 
       if (orgError) {
-        console.error('Error fetching organization:', orgError)
+        console.error('Error fetching owned organizations:', orgError)
         return null
       }
 
-      return orgData
+      if (orgData) {
+        return orgData
+      }
+
+      // If user doesn't own any organizations, try to find organization membership
+      // This is wrapped in try/catch in case the organization_members table doesn't exist
+      try {
+        const { data: memberData, error: memberError } = await supabase
+          .from('organization_members')
+          .select('organization_id')
+          .eq('user_id', userId)
+          .maybeSingle()
+
+        if (memberError) {
+          console.warn('organization_members table might not exist:', memberError)
+          return null
+        }
+
+        if (!memberData) {
+          return null
+        }
+
+        // Fetch the organization details
+        const { data: memberOrgData, error: memberOrgError } = await supabase
+          .from('organizations')
+          .select('*')
+          .eq('id', memberData.organization_id)
+          .maybeSingle()
+
+        if (memberOrgError) {
+          console.error('Error fetching member organization:', memberOrgError)
+          return null
+        }
+
+        return memberOrgData
+      } catch (membershipError) {
+        console.warn('Could not check organization membership:', membershipError)
+        return null
+      }
     } catch (error) {
       console.error('Error fetching user organization:', error)
       return null

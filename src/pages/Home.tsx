@@ -140,11 +140,11 @@ const Home = () => {
             </div>
             
             <div className="relative">
-              <img
-                src="https://images.pexels.com/photos/3094334/pexels-photo-3094334.jpeg?auto=compress&cs=tinysrgb&w=800"
-                alt="Professional stable management"
-                className="w-full h-96 object-cover rounded-2xl shadow-xl"
-              />
+                          <img
+              src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=800&q=80"
+              alt="Professional stable management"
+              className="w-full h-96 object-cover rounded-2xl shadow-xl"
+            />
               <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-2xl"></div>
             </div>
           </div>
