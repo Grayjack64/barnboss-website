@@ -95,6 +95,7 @@ Integration of Stripe Connect for BarnBoss to enable:
 
 ### 1.5.4 Testing & Validation
 - [x] Start development server *(RUNNING - http://localhost:5173)*
+- [x] Fix login UX issues *(ADDED DEDICATED /LOGIN ROUTE)*
 - [ ] Test user registration flow
 - [ ] Test user login flow  
 - [ ] Validate database connection
