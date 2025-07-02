@@ -171,6 +171,7 @@ export interface PlanDetails {
   interval: 'month' | 'year'
   features: string[]
   stripe_price_id: string
+  payment_link?: string // Optional for free plans
 }
 
 // Payment-related types

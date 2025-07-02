@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
 import { Check, Crown, Star, Zap, Trophy } from 'lucide-react'
 import { PlanDetails, SubscriptionPlan } from '../../lib/types'
-import { stripePromise, isStripeAvailable } from '../../lib/stripe'
 import { supabase } from '../../lib/supabase'
 
 const plans: Record<SubscriptionPlan, PlanDetails> = {
@@ -17,7 +15,8 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'Email support',
       'Up to 5 horses'
     ],
-    stripe_price_id: '' // Free plan - no Stripe price ID needed
+    stripe_price_id: '', // Free plan - no Stripe price ID needed
+    payment_link: '' // Free plan - no payment link needed
   },
   personal_plus: {
     name: 'Personal Plus',
@@ -32,7 +31,8 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'Up to 25 horses',
       'Training session tracking'
     ],
-    stripe_price_id: 'price_1RgR4PPortu03WmTrjGMeesQ'
+    stripe_price_id: 'price_1RgR4PPortu03WmTrjGMeesQ',
+    payment_link: '' // TODO: Create Stripe Payment Link for this plan
   },
   premium: {
     name: 'Premium (Ranch)',
@@ -48,7 +48,8 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'Advanced reporting',
       'Team collaboration'
     ],
-    stripe_price_id: 'price_1Rfjq6Portu03WmTqnJ5zVeh'
+    stripe_price_id: 'price_1Rfjq6Portu03WmTqnJ5zVeh',
+    payment_link: '' // TODO: Create Stripe Payment Link for this plan
   },
   pro: {
     name: 'Pro',
@@ -65,7 +66,8 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'White-label options',
       'Dedicated account manager'
     ],
-    stripe_price_id: 'price_1RfjpePortu03WmTwkXDNUTr'
+    stripe_price_id: 'price_1RfjpePortu03WmTwkXDNUTr',
+    payment_link: '' // TODO: Create Stripe Payment Link for this plan
   }
 }
 
@@ -96,21 +98,18 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
       return
     }
 
-    // Check if Stripe is available
-    if (!isStripeAvailable()) {
-      alert('Payment processing is temporarily unavailable. Please try again later.')
-      return
-    }
-
     setLoading(planType)
 
     try {
-      const stripe = await stripePromise
-      if (!stripe) {
-        throw new Error('Failed to load Stripe')
+      const plan = plans[planType]
+      
+      // Check if payment link is available
+      if (!plan.payment_link) {
+        alert(`Payment for ${plan.name} is not yet available. Please contact support for assistance.`)
+        return
       }
 
-      // Get user session for customer info
+      // Get user session for context
       const { data: { session: userSession }, error: sessionError } = await supabase.auth.getSession()
       
       if (sessionError || !userSession) {
@@ -119,26 +118,17 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
         return
       }
 
-      const plan = plans[planType]
-      
-      // Get or create Stripe customer ID first
-      let customerId = await getOrCreateStripeCustomer(userSession.user, organizationId)
+      // Store user context for when they return from Stripe
+      localStorage.setItem('barnboss_checkout_context', JSON.stringify({
+        userId: userId,
+        organizationId: organizationId,
+        planType: planType,
+        email: userSession.user.email,
+        timestamp: Date.now()
+      }))
 
-      // Use Stripe's client-side checkout session creation
-      const { error } = await stripe.redirectToCheckout({
-        mode: 'subscription',
-        lineItems: [{
-          price: plan.stripe_price_id,
-          quantity: 1,
-        }],
-        customerEmail: userSession.user.email,
-        successUrl: `${window.location.origin}/account-settings?success=true&plan=${planType}&session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${window.location.origin}/account-settings?canceled=true`,
-      })
-
-      if (error) {
-        throw new Error(typeof error.message === 'string' ? error.message : 'Payment failed')
-      }
+      // Redirect to Stripe Payment Link (works perfectly with static sites)
+      window.location.href = plan.payment_link
       
     } catch (error) {
       console.error('Subscription error:', error)
@@ -149,28 +139,7 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
     }
   }
 
-  // Helper function to get or create Stripe customer
-  const getOrCreateStripeCustomer = async (user: any, orgId: string) => {
-    try {
-      // Check if organization already has a Stripe customer ID
-      const { data: org } = await supabase
-        .from('organizations')
-        .select('stripe_customer_id')
-        .eq('id', orgId)
-        .single()
 
-      if (org?.stripe_customer_id) {
-        return org.stripe_customer_id
-      }
-
-      // Note: In a production app, you'd create the customer via a server-side function
-      // For now, we'll let Stripe create the customer during checkout
-      return null
-    } catch (error) {
-      console.error('Error getting customer:', error)
-      return null
-    }
-  }
 
   const getPlanIcon = (planType: SubscriptionPlan) => {
     switch (planType) {
