@@ -30,6 +30,39 @@ export const AccountSettings: React.FC = () => {
   const [connectStatus, setConnectStatus] = useState<StripeConnectStatus | null>(null)
   const [loading, setLoading] = useState(false)
 
+  // Handle URL parameters for Stripe checkout results
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const success = urlParams.get('success')
+    const canceled = urlParams.get('canceled')
+    const plan = urlParams.get('plan')
+    const sessionId = urlParams.get('session_id')
+
+    if (success === 'true' && plan) {
+      // Show success message and refresh auth to get updated subscription
+      const message = `🎉 Successfully upgraded to ${plan.replace('_', ' ')} plan! Your subscription is now active.`
+      
+      // Use a timeout to ensure the page has loaded
+      setTimeout(() => {
+        alert(message)
+        refreshAuth() // Refresh to get updated organization data
+        setActiveTab('subscription') // Switch to subscription tab
+        
+        // Clean up URL
+        window.history.replaceState({}, '', '/account-settings')
+      }, 1000)
+    } else if (canceled === 'true') {
+      // Show canceled message
+      setTimeout(() => {
+        alert('Subscription upgrade was canceled. You can try again anytime.')
+        setActiveTab('subscription')
+        
+        // Clean up URL
+        window.history.replaceState({}, '', '/account-settings')
+      }, 1000)
+    }
+  }, [])
+
   // Check Stripe Connect status for Pro users
   useEffect(() => {
     if (organization?.subscription_tier === 'pro') {

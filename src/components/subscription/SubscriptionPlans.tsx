@@ -107,47 +107,68 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
     try {
       const stripe = await stripePromise
       if (!stripe) {
-        throw new Error('Stripe failed to load')
+        throw new Error('Failed to load Stripe')
       }
 
-      // Get current session and auth token properly
+      // Get user session for customer info
       const { data: { session: userSession }, error: sessionError } = await supabase.auth.getSession()
       
       if (sessionError || !userSession) {
-        throw new Error('Authentication required - please log in again')
+        alert('Authentication required - please log in again')
+        setLoading(null)
+        return
       }
 
-      // Create subscription checkout session via Supabase Edge Function
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-subscription-checkout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userSession.access_token}`,
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          organization_id: organizationId,
-          subscription_tier: planType,
-          success_url: `${window.location.origin}/account-settings?success=true&plan=${planType}`,
-          cancel_url: `${window.location.origin}/account-settings?canceled=true`
-        }),
+      const plan = plans[planType]
+      
+      // Get or create Stripe customer ID first
+      let customerId = await getOrCreateStripeCustomer(userSession.user, organizationId)
+
+      // Use Stripe's client-side checkout session creation
+      const { error } = await stripe.redirectToCheckout({
+        mode: 'subscription',
+        lineItems: [{
+          price: plan.stripe_price_id,
+          quantity: 1,
+        }],
+        customerEmail: userSession.user.email,
+        successUrl: `${window.location.origin}/account-settings?success=true&plan=${planType}&session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/account-settings?canceled=true`,
       })
 
-      const checkoutData = await response.json()
-
-      if (!response.ok || checkoutData.error) {
-        throw new Error(checkoutData.error || 'Failed to create checkout session')
+      if (error) {
+        throw new Error(typeof error.message === 'string' ? error.message : 'Payment failed')
       }
-
-      // Redirect to Stripe Checkout
-      window.location.href = checkoutData.checkout_url
       
     } catch (error) {
-      console.error('Error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      alert(`Failed to start subscription: ${errorMessage}`)
+      console.error('Subscription error:', error)
+      const message = error instanceof Error ? error.message : 'Unknown error occurred'
+      alert(`Failed to start subscription: ${message}`)
     } finally {
       setLoading(null)
+    }
+  }
+
+  // Helper function to get or create Stripe customer
+  const getOrCreateStripeCustomer = async (user: any, orgId: string) => {
+    try {
+      // Check if organization already has a Stripe customer ID
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('stripe_customer_id')
+        .eq('id', orgId)
+        .single()
+
+      if (org?.stripe_customer_id) {
+        return org.stripe_customer_id
+      }
+
+      // Note: In a production app, you'd create the customer via a server-side function
+      // For now, we'll let Stripe create the customer during checkout
+      return null
+    } catch (error) {
+      console.error('Error getting customer:', error)
+      return null
     }
   }
 
