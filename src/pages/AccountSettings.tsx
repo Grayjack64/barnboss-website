@@ -33,15 +33,8 @@ export const AccountSettings: React.FC = () => {
 
   // Local page initialization
   useEffect(() => {
-    console.log('🔧 AccountSettings: Page mounted')
-    console.log('🔧 AccountSettings: authLoading:', authLoading)
-    console.log('🔧 AccountSettings: user:', user?.email)
-    console.log('🔧 AccountSettings: profile:', profile)
-    console.log('🔧 AccountSettings: organization:', organization?.name)
-    
     // Set page as ready after a short delay, regardless of auth loading state
     const timer = setTimeout(() => {
-      console.log('🔧 AccountSettings: Setting page ready to true')
       setPageReady(true)
     }, 1000)
 
@@ -189,9 +182,6 @@ export const AccountSettings: React.FC = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading account settings...</p>
-          <p className="text-xs text-gray-400 mt-2">
-            Auth loading: {authLoading ? 'true' : 'false'} | Page ready: {pageReady ? 'true' : 'false'}
-          </p>
         </div>
       </div>
     )
