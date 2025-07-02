@@ -31,12 +31,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Fetch user profile from database
   const fetchUserProfile = async (userId: string) => {
+    console.log('🔧 DEBUG: fetchUserProfile called for userId:', userId)
     try {
       const { data, error } = await supabase
         .from('user_account_profiles')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle() // Use maybeSingle() instead of single() to handle 0 or 1 results
+
+      console.log('🔧 DEBUG: fetchUserProfile query result:', { data, error })
 
       if (error) {
         console.error('Error fetching user profile:', error)
@@ -52,8 +55,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Fetch user's organization (if they're a member)
   const fetchUserOrganization = async (userId: string) => {
+    console.log('🔧 DEBUG: fetchUserOrganization called for userId:', userId)
     try {
       // Try to fetch organizations the user owns first
+      console.log('🔧 DEBUG: Checking for owned organizations...')
       const { data: orgData, error: orgError } = await supabase
         .from('organizations')
         .select('*')
@@ -61,15 +66,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .limit(1)
         .maybeSingle()
 
+      console.log('🔧 DEBUG: owned organizations query result:', { orgData, orgError })
+
       if (orgError) {
         console.error('Error fetching owned organizations:', orgError)
         return null
       }
 
       if (orgData) {
+        console.log('🔧 DEBUG: Found owned organization:', orgData.name)
         return orgData
       }
 
+      console.log('🔧 DEBUG: No owned organizations, checking membership...')
       // If user doesn't own any organizations, try to find organization membership
       // This is wrapped in try/catch in case the organization_members table doesn't exist
       try {
@@ -79,21 +88,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .eq('user_id', userId)
           .maybeSingle()
 
+        console.log('🔧 DEBUG: membership query result:', { memberData, memberError })
+
         if (memberError) {
           console.warn('organization_members table might not exist:', memberError)
           return null
         }
 
         if (!memberData) {
+          console.log('🔧 DEBUG: No organization membership found')
           return null
         }
 
+        console.log('🔧 DEBUG: Found membership, fetching organization details...')
         // Fetch the organization details
         const { data: memberOrgData, error: memberOrgError } = await supabase
           .from('organizations')
           .select('*')
           .eq('id', memberData.organization_id)
           .maybeSingle()
+
+        console.log('🔧 DEBUG: member organization query result:', { memberOrgData, memberOrgError })
 
         if (memberOrgError) {
           console.error('Error fetching member organization:', memberOrgError)
@@ -113,20 +128,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Initialize auth state
   const initializeAuth = async () => {
+    console.log('🔧 DEBUG: Starting auth initialization...')
     try {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (session?.user) {
+        console.log('🔧 DEBUG: Session found, user ID:', session.user.id, 'email:', session.user.email)
         setUser(session.user)
         
         // Fetch user profile and organization
+        console.log('🔧 DEBUG: Fetching user profile and organization for user ID:', session.user.id)
         const [userProfile, userOrganization] = await Promise.all([
           fetchUserProfile(session.user.id),
           fetchUserOrganization(session.user.id)
         ])
 
+        console.log('🔧 DEBUG: Final results - Profile:', userProfile, 'Organization:', userOrganization)
+
         setProfile(userProfile)
         setOrganization(userOrganization)
+      } else {
+        console.log('🔧 DEBUG: No active session found')
       }
     } catch (error) {
       console.error('Error initializing auth:', error)
@@ -207,11 +229,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   useEffect(() => {
+    console.log('🔧 DEBUG: useEffect mounted, starting initialization...')
     initializeAuth()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔧 DEBUG: Auth state change event:', event, 'user:', session?.user?.email || 'none')
+      
       if (event === 'SIGNED_IN' && session?.user) {
+        console.log('🔧 DEBUG: Processing SIGNED_IN event for user:', session.user.id)
         setUser(session.user)
         
         const [userProfile, userOrganization] = await Promise.all([
@@ -219,9 +245,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           fetchUserOrganization(session.user.id)
         ])
 
+        console.log('🔧 DEBUG: SIGNED_IN event results - Profile:', userProfile, 'Organization:', userOrganization)
         setProfile(userProfile)
         setOrganization(userOrganization)
       } else if (event === 'SIGNED_OUT') {
+        console.log('🔧 DEBUG: Processing SIGNED_OUT event')
         setUser(null)
         setProfile(null)
         setOrganization(null)
