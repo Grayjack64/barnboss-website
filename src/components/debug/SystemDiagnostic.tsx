@@ -29,9 +29,18 @@ export const SystemDiagnostic: React.FC = () => {
     const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
     
     return {
-      supabaseUrl: !!supabaseUrl,
-      supabaseKey: !!supabaseKey,
-      stripeKey: !!stripeKey
+      supabaseUrl: {
+        exists: !!supabaseUrl,
+        value: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'undefined'
+      },
+      supabaseKey: {
+        exists: !!supabaseKey,
+        value: supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'undefined'
+      },
+      stripeKey: {
+        exists: !!stripeKey,
+        value: stripeKey ? `${stripeKey.substring(0, 20)}...` : 'undefined'
+      }
     }
   }
 
@@ -58,22 +67,34 @@ export const SystemDiagnostic: React.FC = () => {
   return (
     <div className="bg-white shadow rounded-lg p-6">
       <h3 className="text-lg font-medium text-gray-900 mb-4">System Diagnostic</h3>
-      <div className="space-y-1">
-        <DiagnosticItem
-          label="Supabase URL"
-          status={envVars.supabaseUrl ? 'success' : 'error'}
-          details={envVars.supabaseUrl ? 'Configured' : 'Missing VITE_SUPABASE_URL'}
-        />
-        <DiagnosticItem
-          label="Supabase Key"
-          status={envVars.supabaseKey ? 'success' : 'error'}
-          details={envVars.supabaseKey ? 'Configured' : 'Missing VITE_SUPABASE_ANON_KEY'}
-        />
-        <DiagnosticItem
-          label="Stripe Configuration"
-          status={stripeConfigured ? 'success' : 'warning'}
-          details={stripeConfigured ? 'Ready' : 'Missing VITE_STRIPE_PUBLISHABLE_KEY (payments disabled)'}
-        />
+      <div className="space-y-3">
+        <div>
+          <DiagnosticItem
+            label="Supabase URL"
+            status={envVars.supabaseUrl.exists ? 'success' : 'error'}
+            details={envVars.supabaseUrl.exists ? 'Configured' : 'Missing VITE_SUPABASE_URL'}
+          />
+          <p className="text-xs text-gray-500 ml-6 mt-1">Value: {envVars.supabaseUrl.value}</p>
+        </div>
+        
+        <div>
+          <DiagnosticItem
+            label="Supabase Key"
+            status={envVars.supabaseKey.exists ? 'success' : 'error'}
+            details={envVars.supabaseKey.exists ? 'Configured' : 'Missing VITE_SUPABASE_ANON_KEY'}
+          />
+          <p className="text-xs text-gray-500 ml-6 mt-1">Value: {envVars.supabaseKey.value}</p>
+        </div>
+        
+        <div>
+          <DiagnosticItem
+            label="Stripe Configuration"
+            status={stripeConfigured ? 'success' : 'warning'}
+            details={stripeConfigured ? 'Ready' : 'Missing VITE_STRIPE_PUBLISHABLE_KEY (payments disabled)'}
+          />
+          <p className="text-xs text-gray-500 ml-6 mt-1">Value: {envVars.stripeKey.value}</p>
+        </div>
+        
         <DiagnosticItem
           label="Local Storage"
           status={storageWorks ? 'success' : 'error'}
@@ -82,6 +103,25 @@ export const SystemDiagnostic: React.FC = () => {
       </div>
       
       <div className="mt-6 p-4 bg-blue-50 rounded-md">
+        <h4 className="text-sm font-medium text-blue-900 mb-2">Environment Check:</h4>
+        <div className="text-sm text-blue-800 space-y-1">
+          <p>• <strong>Environment</strong>: {import.meta.env.PROD ? 'Production' : 'Development'}</p>
+          <p>• <strong>Mode</strong>: {import.meta.env.MODE}</p>
+          <p>• <strong>Base URL</strong>: {import.meta.env.BASE_URL}</p>
+          {!envVars.supabaseUrl.exists || !envVars.supabaseKey.exists ? (
+            <div className="mt-3 p-2 bg-red-100 rounded text-red-800">
+              ⚠️ <strong>Missing Supabase environment variables!</strong><br/>
+              Add these to your Netlify environment variables:
+              <ul className="mt-1 list-disc ml-4">
+                <li>VITE_SUPABASE_URL</li>
+                <li>VITE_SUPABASE_ANON_KEY</li>
+              </ul>
+            </div>
+          ) : null}
+        </div>
+      </div>
+      
+      <div className="mt-4 p-4 bg-blue-50 rounded-md">
         <h4 className="text-sm font-medium text-blue-900 mb-2">Quick Fixes:</h4>
         <ul className="text-sm text-blue-800 space-y-1">
           <li>• Create a <code>.env</code> file with your environment variables</li>
