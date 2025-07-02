@@ -32,7 +32,7 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'Training session tracking'
     ],
     stripe_price_id: 'price_1RgR4PPortu03WmTrjGMeesQ',
-    payment_link: '' // TODO: Create Stripe Payment Link for this plan
+    payment_link: 'https://buy.stripe.com/test_14A14p2s87H92I88dP63K00'
   },
   premium: {
     name: 'Premium (Ranch)',
@@ -49,7 +49,7 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'Team collaboration'
     ],
     stripe_price_id: 'price_1Rfjq6Portu03WmTqnJ5zVeh',
-    payment_link: '' // TODO: Create Stripe Payment Link for this plan
+    payment_link: 'https://buy.stripe.com/test_7sY5kF7Ms4uX5Uk0Ln63K02'
   },
   pro: {
     name: 'Pro',
@@ -67,7 +67,7 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'Dedicated account manager'
     ],
     stripe_price_id: 'price_1RfjpePortu03WmTwkXDNUTr',
-    payment_link: '' // TODO: Create Stripe Payment Link for this plan
+    payment_link: 'https://buy.stripe.com/test_9B6cN74Ag9Ph82scu563K01'
   }
 }
 
