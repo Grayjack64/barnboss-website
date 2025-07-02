@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 import { 
   Settings, 
   CreditCard, 
@@ -13,6 +14,7 @@ import {
   Star
 } from 'lucide-react'
 import { SubscriptionPlans } from '../components/subscription/SubscriptionPlans'
+import { SystemDiagnostic } from '../components/debug/SystemDiagnostic'
 
 interface StripeConnectStatus {
   account_id?: string
@@ -23,7 +25,7 @@ interface StripeConnectStatus {
 }
 
 export const AccountSettings: React.FC = () => {
-  const { user, profile, organization, refreshAuth } = useAuth()
+  const { user, profile, organization, refreshAuth, loading: authLoading } = useAuth()
   const [activeTab, setActiveTab] = useState<'account' | 'subscription' | 'connect'>('account')
   const [connectStatus, setConnectStatus] = useState<StripeConnectStatus | null>(null)
   const [loading, setLoading] = useState(false)
@@ -53,19 +55,18 @@ export const AccountSettings: React.FC = () => {
 
     setLoading(true)
     try {
-      // Get auth token for API call
-      const authToken = localStorage.getItem('sb-access-token') || 
-                       sessionStorage.getItem('sb-access-token')
-
-      if (!authToken) {
-        throw new Error('Authentication required')
+      // Get current session and auth token properly
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !session) {
+        throw new Error('Authentication required - please log in again')
       }
 
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-stripe-connect-account`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           organization_id: organization.id,
@@ -128,6 +129,37 @@ export const AccountSettings: React.FC = () => {
       case 'pro': return '$249/month'
       default: return 'Unknown'
     }
+  }
+
+  // Show loading screen while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading account settings...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show message if user is not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h2>
+          <p className="text-gray-600 mb-4">Please log in to access your account settings.</p>
+          <a 
+            href="/login" 
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          >
+            Go to Login
+          </a>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -197,6 +229,9 @@ export const AccountSettings: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'account' && (
           <div className="space-y-6">
+            {/* System Diagnostic - temporary for debugging */}
+            <SystemDiagnostic />
+            
             {/* Account Information */}
             <div className="bg-white shadow rounded-lg">
               <div className="px-4 py-5 sm:p-6">

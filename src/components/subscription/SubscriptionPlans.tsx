@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import { Check, Crown, Star, Zap, Trophy } from 'lucide-react'
 import { PlanDetails, SubscriptionPlan } from '../../lib/types'
-import { stripePromise } from '../../lib/stripe'
+import { stripePromise, isStripeAvailable } from '../../lib/stripe'
+import { supabase } from '../../lib/supabase'
 
 const plans: Record<SubscriptionPlan, PlanDetails> = {
   personal: {
@@ -95,6 +96,12 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
       return
     }
 
+    // Check if Stripe is available
+    if (!isStripeAvailable()) {
+      alert('Payment processing is temporarily unavailable. Please try again later.')
+      return
+    }
+
     setLoading(planType)
 
     try {
@@ -103,12 +110,11 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
         throw new Error('Stripe failed to load')
       }
 
-      // Get auth token for API call
-      const authToken = localStorage.getItem('sb-access-token') || 
-                       sessionStorage.getItem('sb-access-token')
-
-      if (!authToken) {
-        throw new Error('Authentication required')
+      // Get current session and auth token properly
+      const { data: { session: userSession }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !userSession) {
+        throw new Error('Authentication required - please log in again')
       }
 
       // Create subscription checkout session via Supabase Edge Function
@@ -116,7 +122,7 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
+          'Authorization': `Bearer ${userSession.access_token}`,
         },
         body: JSON.stringify({
           user_id: userId,
@@ -127,14 +133,14 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
         }),
       })
 
-      const session = await response.json()
+      const checkoutData = await response.json()
 
-      if (!response.ok || session.error) {
-        throw new Error(session.error || 'Failed to create checkout session')
+      if (!response.ok || checkoutData.error) {
+        throw new Error(checkoutData.error || 'Failed to create checkout session')
       }
 
       // Redirect to Stripe Checkout
-      window.location.href = session.checkout_url
+      window.location.href = checkoutData.checkout_url
       
     } catch (error) {
       console.error('Error:', error)
