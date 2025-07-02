@@ -32,7 +32,7 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'Up to 25 horses',
       'Training session tracking'
     ],
-    stripe_price_id: 'price_personal_plus_monthly' // Replace with actual Stripe price ID
+    stripe_price_id: 'price_1RgR4PPortu03WmTrjGMeesQ'
   },
   premium: {
     name: 'Premium (Ranch)',
@@ -48,11 +48,11 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'Advanced reporting',
       'Team collaboration'
     ],
-    stripe_price_id: 'price_premium_monthly' // Replace with actual Stripe price ID
+    stripe_price_id: 'price_1Rfjq6Portu03WmTqnJ5zVeh'
   },
   pro: {
     name: 'Pro',
-    price: 249,
+    price: 249.00,
     interval: 'month',
     features: [
       'Everything in Premium',
@@ -65,7 +65,7 @@ const plans: Record<SubscriptionPlan, PlanDetails> = {
       'White-label options',
       'Dedicated account manager'
     ],
-    stripe_price_id: 'price_pro_monthly' // Replace with actual Stripe price ID
+    stripe_price_id: 'price_1RfjpePortu03WmTwkXDNUTr'
   }
 }
 

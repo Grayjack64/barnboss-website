@@ -21,21 +21,21 @@ const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
     id: 'personal_plus',
     name: 'Personal Plus',
     price: 999, // $9.99 in cents
-    stripe_price_id: 'price_personal_plus', // To be created in Stripe Dashboard
+    stripe_price_id: 'price_1RgR4PPortu03WmTrjGMeesQ',
     features: ['Enhanced tracking', 'Advanced reports', 'Priority support']
   },
   premium: {
     id: 'premium',
     name: 'Premium (Ranch)',
     price: 4999, // $49.99 in cents
-    stripe_price_id: 'price_premium', // To be created in Stripe Dashboard
+    stripe_price_id: 'price_1Rfjq6Portu03WmTqnJ5zVeh',
     features: ['Multi-horse management', 'Team collaboration', 'Advanced analytics']
   },
   pro: {
     id: 'pro',
     name: 'Pro',
     price: 24900, // $249 in cents
-    stripe_price_id: 'price_pro', // To be created in Stripe Dashboard
+    stripe_price_id: 'price_1RfjpePortu03WmTwkXDNUTr',
     features: ['Invoice & collect payments', 'Client management', 'Marketplace access']
   }
 }

@@ -144,9 +144,9 @@ npx supabase secrets set FRONTEND_URL=https://mybarnboss.com
 ### **2. Configure Stripe Dashboard**
 ```typescript
 // Create subscription products in Stripe Dashboard:
-✅ Personal Plus: $9.99/month → Copy price ID to: price_personal_plus
-✅ Premium: $49.99/month → Copy price ID to: price_premium  
-✅ Pro: $249/month → Copy price ID to: price_pro
+✅ Personal Plus: $9.99/month → Price ID: price_1RgR4PPortu03WmTrjGMeesQ
+✅ Premium (Ranch): $49.99/month → Price ID: price_1Rfjq6Portu03WmTqnJ5zVeh
+✅ Pro: $249/month → Price ID: price_1RfjpePortu03WmTwkXDNUTr
 
 // Update environment variables with actual Stripe price IDs
 ```
