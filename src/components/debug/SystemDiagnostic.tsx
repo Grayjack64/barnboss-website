@@ -1,6 +1,5 @@
 import React from 'react'
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react'
-import { isStripeAvailable } from '../../lib/stripe'
 
 interface DiagnosticItemProps {
   label: string
@@ -47,19 +46,14 @@ export const SystemDiagnostic: React.FC = () => {
     }
   }
 
-  const checkStripeLoading = async () => {
-    try {
-      if (!isStripeAvailable()) return false
-      // Don't actually load Stripe here, just check if it's configured
-      return true
-    } catch {
-      return false
-    }
+  const checkStripeLoading = () => {
+    // Simple check for Stripe environment variable (no JavaScript loading)
+    return !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   }
 
   const envVars = checkEnvironmentVars()
   const storageWorks = checkLocalStorage()
-  const stripeConfigured = isStripeAvailable()
+  const stripeConfigured = checkStripeLoading()
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
